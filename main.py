@@ -18,6 +18,7 @@ pcsoc_x = pcsoc_x_start
 pcsoc_y = pcsoc_y_start
 pcsoc_x_change = 0
 pcsoc_y_change = 4
+pcsoc_falling = False 
 
 gamedev_x_start = 1000
 gamedev_y_start = 300
@@ -25,6 +26,7 @@ gamedev_x = gamedev_x_start
 gamedev_y = gamedev_y_start
 gamedev_x_change = 0
 gamedev_y_change = 4
+gamedev_falling = False
 
 # set game window stats
 game_display = pygame.display.set_mode((window_width, window_height))
@@ -53,7 +55,7 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-            
+    
         # Controller stuff, do this later
         #if event.type == pygame.JOYBUTTONDOWN:
         #    print("Pressed joystick button")
@@ -76,7 +78,8 @@ while True:
             elif event.key == pygame.K_w:
                 pcsoc_y_change = -5
             elif event.key == pygame.K_s:
-                pcsoc_y_change = 4
+                pcsoc_y_change = 9
+                pcsoc_falling = True
             elif event.key == pygame.K_LEFT:
                 gamedev_x_change = -4
             elif event.key == pygame.K_RIGHT:
@@ -84,7 +87,8 @@ while True:
             elif event.key == pygame.K_UP:
                 gamedev_y_change = -5
             elif event.key == pygame.K_DOWN:
-                gamedev_y_change = 4
+                gamedev_y_change = 9
+                gamedev_falling = True
 
         # key releases
         if event.type == pygame.KEYUP:
@@ -96,6 +100,20 @@ while True:
                gamedev_x_change = 0
             if event.key == pygame.K_DOWN or event.key == pygame.K_UP:
                gamedev_y_change = 4
+
+    if pcsoc_falling:
+        if pcsoc_rect.colliderect(boundary_bottom_rect):
+            pcsoc_y_change = 4
+            pcsoc_falling = False
+        else:
+            pcsoc_y_change = 9
+
+    if gamedev_falling:
+        if gamedev_rect.colliderect(boundary_bottom_rect):
+            gamedev_y_change = 4
+            gamedev_falling = False
+        else:
+            gamedev_y_change = 9
 
     # boundary collisions
     if ((pcsoc_rect.colliderect(boundary_right_rect) and pcsoc_x_change > 0) or
@@ -152,6 +170,8 @@ while True:
             pcsoc_y  = pcsoc_y_start
             gamedev_y_change = 4
             pcsoc_y_change = 4 
+
+
 
     pcsoc_rect.move_ip(pcsoc_x_change, pcsoc_y_change)
     gamedev_rect.move_ip(gamedev_x_change, gamedev_y_change)
