@@ -14,19 +14,22 @@ bg_color = (169,169,169)
 
 pcsoc_x_start = 100
 pcsoc_y_start = 300
-pcsoc_x = pcsoc_x_start
-pcsoc_y = pcsoc_y_start
 pcsoc_x_change = 0
 pcsoc_y_change = 4
+pcsoc_x = pcsoc_x_start
+pcsoc_y = pcsoc_y_start
+pcsoc_old_x = pcsoc_x
 pcsoc_falling = False 
+pcsoc_boost = False
 
 gamedev_x_start = 1000
 gamedev_y_start = 300
-gamedev_x = gamedev_x_start
-gamedev_y = gamedev_y_start
 gamedev_x_change = 0
 gamedev_y_change = 4
+gamedev_x = gamedev_x_start
+gamedev_y = gamedev_y_start
 gamedev_falling = False
+gamedev_boost = False
 
 # set game window stats
 game_display = pygame.display.set_mode((window_width, window_height))
@@ -80,6 +83,10 @@ while True:
             elif event.key == pygame.K_s:
                 pcsoc_y_change = 9
                 pcsoc_falling = True
+            elif event.key == pygame.K_LSHIFT:
+                pcsoc_direction = pcsoc_x_change
+                pcsoc_old_x = pcsoc_x
+                pcsoc_boost = True
             elif event.key == pygame.K_LEFT:
                 gamedev_x_change = -4
             elif event.key == pygame.K_RIGHT:
@@ -107,6 +114,20 @@ while True:
             pcsoc_falling = False
         else:
             pcsoc_y_change = 9
+
+    if pcsoc_boost:
+        if pcsoc_direction > 0:
+            if pcsoc_x < pcsoc_old_x + 50:
+                pcsoc_x_change = 10
+            else:
+                pcsoc_x_change = 4
+                pcsoc_boost = False
+        else:
+            if pcsoc_x > pcsoc_old_x - 50:
+                pcsoc_x_change = - 10
+            else:
+                pcsoc_x_change = -4
+                pcsoc_boost = False
 
     if gamedev_falling:
         if gamedev_rect.colliderect(boundary_bottom_rect):
@@ -170,8 +191,6 @@ while True:
             pcsoc_y  = pcsoc_y_start
             gamedev_y_change = 4
             pcsoc_y_change = 4 
-
-
 
     pcsoc_rect.move_ip(pcsoc_x_change, pcsoc_y_change)
     gamedev_rect.move_ip(gamedev_x_change, gamedev_y_change)
