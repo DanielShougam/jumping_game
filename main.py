@@ -47,6 +47,39 @@ boundary_left_rect = pygame.Rect(0, 0, 30, 720)
 boundary_top_rect = pygame.Rect(0, 0, 1280, 30)
 boundary_bottom_rect = pygame.Rect(30, 700, 1280, 720)
 
+def check_boundary_collision(character):
+    # boundary collisions
+    if ((character.rect.colliderect(boundary_right_rect) and character.x_change > 0) or
+    (character.rect.colliderect(boundary_left_rect) and character.x_change < 0)):
+        charcter.x_change = 0
+
+    if ((charcater.rect.colliderect(boundary_top_rect) and charcater.y_change < 0) or
+        (charcter.rect.colliderect(boundary_bottom_rect) and character.y_change > 0)):
+        character.y_change = 0
+
+def check_charcater_collision(char_one, char_two):
+    # character collisions
+    if (char_one.rect.colliderect(char_two.rect)):
+        if ((char_one.x_change > 0) and 
+        (char_one.y in range(int(char_two.y - char_two.height / 2), int(char_two.y + char_two.height / 2)))):
+            if char_one.x < char_two.x:
+                char_one.x_change = 0
+        if char_one.x_change < 0 and char_one.y in range(int(char_two.y - char_two.height / 2), int(char_two.y + char_two.height / 2)):
+            if char_one.x > char_two.x:
+                char_one.x_change = 0
+        if (char_one.x in range(int(char_two.x - char_two.width / 2), int(char_two.x + char_two.width / 2)) and char_one.y < int(char_two.y + char_two.height / 2)):
+            char_one.y_change = 0
+
+    # check if one player on top of the other
+    if (char_one.rect.colliderect(char_two.rect)):
+        if ((char_one.y + char_one.height / 2) in range(int(char_two.y - char_two.height / 2), int(char_two.y)) and
+            (char_one.x in range(int(char_two.x - char_two.width / 2), int(char_two.x + char_two.width / 2)))):
+            char_two.rect = pygame.Rect(char_two.x_start, char_two.y_start, char_two.width, char_two.height)
+            char_two.x = char_two.x_start
+            char_two.y  = char_two.y_start
+            char_one.y_change = 4
+            char_two.y_change = 4
+
 def level_one():
     global xbox
     global hatsune
@@ -160,60 +193,12 @@ def level_one():
                 hatsune.boost_counter = 0
 
     # boundary collisions
-    if ((xbox.rect.colliderect(boundary_right_rect) and xbox.x_change > 0) or
-    (xbox.rect.colliderect(boundary_left_rect) and xbox.x_change < 0)):
-        xbox.x_change = 0
-
-    if ((xbox.rect.colliderect(boundary_top_rect) and xbox.y_change < 0) or
-        (xbox.rect.colliderect(boundary_bottom_rect) and xbox.y_change > 0)):
-        xbox.y_change = 0
-
-    if ((hatsune.rect.colliderect(boundary_right_rect) and hatsune.x_change > 0) or
-        (hatsune.rect.colliderect(boundary_left_rect) and hatsune.x_change < 0)):
-        hatsune.x_change = 0
-
-    if ((hatsune.rect.colliderect(boundary_top_rect) and hatsune.y_change < 0) or
-        (hatsune.rect.colliderect(boundary_bottom_rect) and hatsune.y_change > 0)):
-        hatsune.y_change = 0
+    check_boundary_collision(xbox)
+    check_boundary_collision(hatsune)
 
     # character collisions
-    if (xbox.rect.colliderect(hatsune.rect)):
-        if xbox.x_change > 0 and xbox.y in range(int(hatsune.y - hatsune.height / 2), int(hatsune.y + hatsune.height / 2)):
-            if xbox.x < hatsune.x:
-                xbox.x_change = 0
-        if xbox.x_change < 0 and xbox.y in range(int(hatsune.y - hatsune.height / 2), int(hatsune.y + hatsune.height / 2)):
-            if xbox.x > hatsune.x:
-                xbox.x_change = 0
-        if (xbox.x in range(int(hatsune.x - hatsune.width / 2), int(hatsune.x + hatsune.width / 2)) and xbox.y < int(hatsune.y + hatsune.height / 2)):
-            xbox.y_change = 0
-            
-        if hatsune.x_change > 0 and hatsune.y in range(int(xbox.y - xbox.height / 2), int(xbox.y + xbox.height / 2)):
-            if hatsune.x < xbox.x:
-                hatsune.x_change = 0
-        if hatsune.x_change < 0 and hatsune.y in range(int(xbox.y - xbox.height / 2), int(xbox.y + xbox.height / 2)):
-            if hatsune.x > xbox.x:
-                hatsune.x_change = 0
-        if (hatsune.x in range(int(xbox.x - xbox.width / 2), int(xbox.x + xbox.width / 2)) and hatsune.y < int(xbox.y + xbox.height / 2)):
-            hatsune.y_change = 0
-
-    # check if one player on top of the other
-    if (xbox.rect.colliderect(hatsune.rect)):
-        if ((xbox.y + xbox.height / 2) in range(int(hatsune.y - hatsune.height / 2), int(hatsune.y)) and
-            (xbox.x in range(int(hatsune.x - hatsune.width / 2), int(hatsune.x + hatsune.width / 2)))):
-            hatsune.rect = pygame.Rect(hatsune.x_start, hatsune.y_start, hatsune.width, hatsune.height)
-            hatsune.x = hatsune.x_start
-            hatsune.y  = hatsune.y_start
-            xbox.y_change = 4
-            hatsune.y_change = 4
-
-    if (hatsune.rect.colliderect(xbox.rect)):
-        if ((hatsune.y + hatsune.height / 2) in range(int(xbox.y - xbox.height / 2), int(xbox.y)) and
-            (hatsune.x in range(int(xbox.x - xbox.width / 2), int(xbox.x + xbox.width / 2)))):
-            xbox.rect = pygame.Rect(xbox.x_start, xbox.y_start, xbox.width, xbox.height)
-            xbox.x = xbox.x_start
-            xbox.y  = xbox.y_start
-            hatsune.y_change = 4
-            xbox.y_change = 4 
+    check_character_collision(xbox, hatsune)
+    check_character_collision(hatsune, xbox)
 
     xbox.rect.move_ip(xbox.x_change, xbox.y_change)
     hatsune.rect.move_ip(hatsune.x_change, hatsune.y_change)
@@ -227,7 +212,6 @@ def level_one():
     game_display.blit(hatsune.sprite, hatsune.rect)
     pygame.display.update() 
     clock.tick(60) # 60 FPS
-    
 
 while True:
     level_one()
