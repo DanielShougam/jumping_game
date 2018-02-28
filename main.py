@@ -12,24 +12,21 @@ window_height = 720
 
 bg_color = (169,169,169)
 
-pcsoc_x_start = 100
-pcsoc_y_start = 300
-pcsoc_x_change = 0
-pcsoc_y_change = 4
-pcsoc_x = pcsoc_x_start
-pcsoc_y = pcsoc_y_start
-pcsoc_old_x = pcsoc_x
-pcsoc_falling = False 
-pcsoc_boost = False
+class character:
+    def __init__(self, x_start, y_start_):
+        self.x_start = x_start
+        self.y_start = y_start
+        self.x_change = 0
+        self.y_change = 4
+        self.boost_counter = 0
+        self.x = x_start
+        self.y = y_start
+        self.old_x = self.x
+        self.falling = False
+        self.boost = False
 
-gamedev_x_start = 1000
-gamedev_y_start = 300
-gamedev_x_change = 0
-gamedev_y_change = 4
-gamedev_x = gamedev_x_start
-gamedev_y = gamedev_y_start
-gamedev_falling = False
-gamedev_boost = False
+xbox = character(100, 300)
+hatsune = character(1000, 300)
 
 # set game window stats
 game_display = pygame.display.set_mode((window_width, window_height))
@@ -53,11 +50,14 @@ boundary_left_rect = pygame.Rect(0, 0, 30, 720)
 boundary_top_rect = pygame.Rect(0, 0, 1280, 30)
 boundary_bottom_rect = pygame.Rect(30, 700, 1280, 720)
 
-while True:
+def level_one():
+    pcsoc_boost_counter += 1
+    gamedev_boost_counter += 1
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+
     
         # Controller stuff, do this later
         #if event.type == pygame.JOYBUTTONDOWN:
@@ -84,9 +84,15 @@ while True:
                 pcsoc_y_change = 9
                 pcsoc_falling = True
             elif event.key == pygame.K_LSHIFT:
-                pcsoc_direction = pcsoc_x_change
-                pcsoc_old_x = pcsoc_x
-                pcsoc_boost = True
+                if pcsoc_boost_counter > 300:
+                    pcsoc_direction = pcsoc_x_change
+                    pcsoc_old_x = pcsoc_x
+                    pcsoc_boost = True
+            elif event.key == pygame.K_RSHIFT:
+                if gamedev_boost_counter > 300:
+                    gamedev_direction = gamedev_x_change
+                    gamedev_old_x = gamedev_x
+                    gamedev_boost = True
             elif event.key == pygame.K_LEFT:
                 gamedev_x_change = -4
             elif event.key == pygame.K_RIGHT:
@@ -117,17 +123,19 @@ while True:
 
     if pcsoc_boost:
         if pcsoc_direction > 0:
-            if pcsoc_x < pcsoc_old_x + 50:
+            if pcsoc_x < pcsoc_old_x + 90:
                 pcsoc_x_change = 10
             else:
                 pcsoc_x_change = 4
                 pcsoc_boost = False
+                pcsoc_boost_counter = 0
         else:
-            if pcsoc_x > pcsoc_old_x - 50:
+            if pcsoc_x > pcsoc_old_x - 90:
                 pcsoc_x_change = - 10
             else:
                 pcsoc_x_change = -4
                 pcsoc_boost = False
+                pcsoc_boost_counter = 0
 
     if gamedev_falling:
         if gamedev_rect.colliderect(boundary_bottom_rect):
@@ -135,6 +143,22 @@ while True:
             gamedev_falling = False
         else:
             gamedev_y_change = 9
+            
+    if gamedev_boost:
+        if gamedev_direction > 0:
+            if gamedev_x < gamedev_old_x + 90:
+                gamedev_x_change = 10
+            else:
+                gamedev_x_change = 4
+                gamedev_boost = False
+                gamedev_boost_counter = 0
+        else:
+            if gamedev_x > gamedev_old_x - 90:
+                gamedev_x_change = - 10
+            else:
+                gamedev_x_change = -4
+                gamedev_boost = False
+                gamedev_boost_counter = 0
 
     # boundary collisions
     if ((pcsoc_rect.colliderect(boundary_right_rect) and pcsoc_x_change > 0) or
@@ -204,3 +228,7 @@ while True:
     game_display.blit(gamedev_sprite, gamedev_rect)
     pygame.display.update() 
     clock.tick(60) # 60 FPS
+    
+
+while True:
+    level_one()
