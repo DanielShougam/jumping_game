@@ -13,7 +13,7 @@ window_height = 720
 bg_color = (169,169,169)
 
 class character:
-    def __init__(self, x_start, y_start, height, width):
+    def __init__(self, x_start, y_start, height, width, name):
         self.x_start = x_start
         self.y_start = y_start
         self.height = height
@@ -27,9 +27,10 @@ class character:
         self.falling = False
         self.boost = False
         self.rect = pygame.Rect(self.x, self.y, self.width, self.height)
+        self.name = name
 
-xbox = character(100, 300, 50, 60)
-hatsune = character(1000, 300, 60, 60)
+xbox = character(100, 300, 50, 60, "xbox")
+hatsune = character(1000, 300, 60, 60, "hatsune")
 
 # set game window stats
 game_display = pygame.display.set_mode((window_width, window_height))
@@ -53,11 +54,11 @@ def check_boundary_collision(character):
     (character.rect.colliderect(boundary_left_rect) and character.x_change < 0)):
         charcter.x_change = 0
 
-    if ((charcater.rect.colliderect(boundary_top_rect) and charcater.y_change < 0) or
-        (charcter.rect.colliderect(boundary_bottom_rect) and character.y_change > 0)):
+    if ((character.rect.colliderect(boundary_top_rect) and character.y_change < 0) or
+        (character.rect.colliderect(boundary_bottom_rect) and character.y_change > 0)):
         character.y_change = 0
 
-def check_charcater_collision(char_one, char_two):
+def check_character_collision(char_one, char_two):
     # character collisions
     if (char_one.rect.colliderect(char_two.rect)):
         if ((char_one.x_change > 0) and 
