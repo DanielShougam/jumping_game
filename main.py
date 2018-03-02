@@ -16,8 +16,8 @@ class character:
     def __init__(self, x_start, y_start, height, width, name):
         self.x_start = x_start
         self.y_start = y_start
-        self.height = height
-        self.width = width
+        self.height = width 
+        self.width = height 
         self.x_change = 0
         self.y_change = 4
         self.boost_counter = 0
